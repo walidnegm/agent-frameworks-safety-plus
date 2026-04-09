@@ -19,7 +19,7 @@ Tier 6: Assurance & Operations            (Layers 19-22)
 
 Every LLM call is both a trust boundary and a control boundary. Prompt-level controls are the weakest layer. Deterministic code controls — auth, schema enforcement, output validation, execution verification — are the real defense.
 
-## [Read the full document](agent-risk-safety-security-public.md)
+## [Read the full document](agent-risk-safety-security.md)
 
 ---
 
