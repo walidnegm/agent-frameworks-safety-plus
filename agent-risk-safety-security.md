@@ -7,7 +7,7 @@
   - [Layer 1: Risk Assessment](#layer-1-risk-assessment)
   - [Layer 2: System Dynamics & Probabilistic Behavior](#layer-2-system-dynamics--probabilistic-behavior)
   - [Layer 3: Harm Prevention & Ethical Risk](#layer-3-harm-prevention--ethical-risk)
-  - [Layer 4: Observed Failure Modes](#layer-4-observed-failure-modes-reasoning--reliability)
+  - [Layer 4: Reasoning & Reliability Risks](#layer-4-reasoning--reliability-risks)
 - **Tier 2: Governance & Inventory** (Layers 5-7)
   - [Layer 5: Application Trust-Boundary & Exposure Inventory](#layer-5-application-trust-boundary--exposure-inventory)
   - [Layer 6: Governance, Configuration Authority & Operational Policy](#layer-6-governance-configuration-authority--operational-policy)
@@ -247,7 +247,7 @@ Safety risks require ongoing evaluation — not one-time findings. An effective 
 
 ---
 
-## Layer 4: Observed Failure Modes (Reasoning & Reliability)
+## Layer 4: Reasoning & Reliability Risks
 
 These are not adversarial attacks — they are inherent LLM failure modes that occur during normal usage. They are often more impactful than security exploits because they happen silently, affect every user, and erode trust.
 
