@@ -359,6 +359,27 @@ These are not adversarial attacks — they are inherent LLM failure modes that o
 - **Version control + audit trail** — every prompt change tracked
 - **CI/CD prompt scanning** — automated checks for missing security sections, accidental credential inclusion
 
+### Prompt-Seeded False Grounding
+
+Prompt templates can themselves seed hallucinations when they confidently
+describe the user's input before the application has verified what the user
+actually provided.
+
+**Example encountered:** A process-design assistant prompt contained a gated
+template like: "I see a detailed workflow spec — [N] tasks with roles, SLAs,
+and KPIs. Let me analyze this and propose the structure." It was intended only
+for richly structured first-turn inputs. The model later reused the same
+optimistic frame on a sparse follow-up message, dropped the unverifiable
+details, and still implied the user had already provided a much richer spec
+than they actually had.
+
+**Controls:**
+- **No affirmative richness templates without verification** — prompts must not assert that the user supplied detailed structure, counts, roles, metrics, KPIs, completeness, or similar richness unless code has verified those facts from the actual input
+- **Neutral acknowledgment by default** — prefer phrasing such as "I'll extract what is present" or "I'll work from the details you provided" over "I see a complete/detailed spec"
+- **Code-verified input descriptors** — if the model needs to mention task counts, named roles, attached metrics, or other structural facts about the input, pass those as verified fields from code rather than asking the model to infer and narrate them
+- **Sparse-input regression tests** — test that short or underspecified inputs are not described as detailed, complete, or pre-structured, and that gated templates do not reactivate on later turns
+- **Clarify or label suggestions** — if the input is underspecified, the system should either ask for clarification or clearly mark proposed structure as suggested, not as user-provided fact
+
 ### Model & Runtime Parameter Governance
 - **Model selection policy** — which model for which agent (cheapest for classification, strongest for high-stakes evaluation or structured tasks)
 - **Temperature governance** — lower temperature for extraction, evaluation, or other high-consequence tasks; controlled for creative tasks; never uncontrolled
@@ -893,6 +914,7 @@ In short:
 - **Trust frameworks** define what good AI systems should optimize for.
 - **Risk and threat frameworks** define what can go wrong.
 - **This document** defines where concrete controls belong in an LLM-based application so those risks are reduced in practice.
+
 
 ## Acknowledgements
 
