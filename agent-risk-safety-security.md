@@ -3,34 +3,36 @@
 ## Table of Contents
 
 - [Design Principle](#design-principle)
+- [Purpose & Positioning](#purpose--positioning)
 - **Tier 1: Risk Assessment & Safety** (Layers 1-4)
   - [Layer 1: Risk Assessment](#layer-1-risk-assessment)
   - [Layer 2: System Dynamics & Probabilistic Behavior](#layer-2-system-dynamics--probabilistic-behavior)
   - [Layer 3: Harm Prevention & Ethical Risk](#layer-3-harm-prevention--ethical-risk)
   - [Layer 4: Reasoning & Reliability Risks](#layer-4-reasoning--reliability-risks)
-- **Tier 2: Governance & Inventory** (Layers 5-7)
+- **Tier 2: Governance & Inventory** (Layers 5-8)
   - [Layer 5: Application Trust-Boundary & Exposure Inventory](#layer-5-application-trust-boundary--exposure-inventory)
   - [Layer 6: Governance, Configuration Authority & Operational Policy](#layer-6-governance-configuration-authority--operational-policy)
-  - [Layer 7: Third-Party Hosted LLMs & Agent Platforms](#layer-7-third-party-hosted-llms--agent-platforms)
-- **Tier 3: Runtime Controls** (Layers 8-15)
-  - [Layer 8: Authentication, Authorization & Least Privilege](#layer-8-authentication-authorization--least-privilege)
-  - [Layer 9: Input Sanitization & Content Guardrails](#layer-9-input-sanitization--content-guardrails)
-  - [Layer 10: Instruction Hierarchy (Immutable Block)](#layer-10-instruction-hierarchy-immutable-block)
-  - [Layer 11: Behavior Hardening (Scope & Format Enforcement)](#layer-11-behavior-hardening-scope--format-enforcement)
-  - [Layer 12: Context & Memory Integrity](#layer-12-context--memory-integrity)
-  - [Layer 13: Output Validation & Execution Integrity](#layer-13-output-validation--execution-integrity)
-  - [Layer 14: Data Storage, Exposure & Retention Controls](#layer-14-data-storage-exposure--retention-controls)
-  - [Layer 15: Interaction Modality Transitions](#layer-15-interaction-modality-transitions)
-- **Tier 4: Agentic Graph Execution** (Layers 16-17)
-  - [Graph Execution Risk Catalog](#risk-catalog)
-  - [Node-Level Risk Assessment](#node-level-risk-assessment)
-- **Tier 5: Infrastructure Security** (Layer 18)
-  - [IT / Cybersecurity & Infrastructure](#it--cybersecurity--infrastructure)
-- **Tier 6: Assurance & Operations** (Layers 19-22)
-  - [Layer 19: Application Abuse Controls & Rate Limiting](#layer-19-application-abuse-controls--rate-limiting)
-  - [Layer 20: Assurance — Regression, Red-Team & Continuous Validation](#layer-20-assurance--regression-red-team--continuous-validation)
-  - [Layer 21: External Evaluation, Drift Detection & Behavioral Monitoring](#layer-21-external-evaluation-drift-detection--behavioral-monitoring)
-  - [Layer 22: Guardian Agents & AI-Powered Guardrails](#layer-22-guardian-agents--ai-powered-guardrails)
+  - [Layer 7: Knowledge, Grounding, and Model Adaptation](#layer-7-knowledge-grounding-and-model-adaptation)
+  - [Layer 8: Third-Party Hosted LLMs & Agent Platforms](#layer-8-third-party-hosted-llms--agent-platforms)
+- **Tier 3: Runtime Controls** (Layers 9-16)
+  - [Layer 9: Authentication, Authorization & Least Privilege](#layer-9-authentication-authorization--least-privilege)
+  - [Layer 10: Input Sanitization & Content Guardrails](#layer-10-input-sanitization--content-guardrails)
+  - [Layer 11: Instruction Hierarchy (Immutable Block)](#layer-11-instruction-hierarchy-immutable-block)
+  - [Layer 12: Behavior Hardening (Scope & Format Enforcement)](#layer-12-behavior-hardening-scope--format-enforcement)
+  - [Layer 13: Context & Memory Integrity](#layer-13-context--memory-integrity)
+  - [Layer 14: Output Validation & Execution Integrity](#layer-14-output-validation--execution-integrity)
+  - [Layer 15: Data Storage, Exposure & Retention Controls](#layer-15-data-storage-exposure--retention-controls)
+  - [Layer 16: Interaction Modality Transitions](#layer-16-interaction-modality-transitions)
+- **Tier 4: Agentic Graph Execution** (Layers 17-18)
+  - [Layer 17: Agentic Graph Execution Security & Safety](#layer-17-agentic-graph-execution-security--safety)
+  - [Layer 18: Node-Level Risk Assessment](#layer-18-node-level-risk-assessment)
+- **Tier 5: Infrastructure Security** (Layer 19)
+  - [Layer 19: IT / Cybersecurity & Infrastructure](#layer-19-it--cybersecurity--infrastructure)
+- **Tier 6: Assurance & Operations** (Layers 20-23)
+  - [Layer 20: Application Abuse Controls & Rate Limiting](#layer-20-application-abuse-controls--rate-limiting)
+  - [Layer 21: Assurance — Regression, Red-Team & Continuous Validation](#layer-21-assurance--regression-red-team--continuous-validation)
+  - [Layer 22: External Evaluation, Drift Detection & Behavioral Monitoring](#layer-22-external-evaluation-drift-detection--behavioral-monitoring)
+  - [Layer 23: Guardian Agents & AI-Powered Guardrails](#layer-23-guardian-agents--ai-powered-guardrails)
 
 ---
 
@@ -46,14 +48,28 @@ Prompt-level controls such as immutable instructions, scope locks, and format gu
 
 The goal is not to make the model perfectly trustworthy. The goal is to reduce blast radius, prevent single-model failures from becoming system failures, and detect degradation before it becomes a security, safety, or operational incident.
 
+## Purpose & Positioning
+
+This document is a **layered control architecture for LLM-based applications and agentic systems**. Its purpose is to help teams design, implement, and operate concrete controls across the parts of the system where LLM risk actually manifests: prompts, tools, memory, outputs, writes, storage, handoffs, and assurance.
+
+It is intentionally narrower and more implementation-oriented than broad **trustworthy AI** frameworks. Frameworks from organizations such as Deloitte, IBM, and Meta define high-level objectives such as trust, fairness, accountability, robustness, privacy, and safety across the AI lifecycle. This document complements those by translating those objectives into **application-layer controls** for real LLM products.
+
+It also complements established **AI risk and threat frameworks**:
+
+- **NIST AI RMF / Generative AI Profile** provide the enterprise risk-management frame and lifecycle governance model.
+- **OWASP LLM / Agentic AI guidance** provides vulnerability and failure taxonomies for LLM-enabled systems.
+- **MITRE ATLAS** provides attacker- and TTP-oriented threat modeling for AI systems.
+
+This document sits one layer lower: it is not primarily a principles paper, a trust charter, or a threat catalog. It is a **defense-in-depth engineering model** for where controls belong in the product stack. In that sense, it operationalizes high-level AI trust goals into specific runtime, data, execution, UI-transition, and assurance controls.
+
 The architecture is organized in **six tiers**, ordered from strategic assessment through operational assurance:
 
 - **Tier 1: Risk Assessment & Safety** (Layers 1-4) — understand what can go wrong. Risk taxonomy, safety evaluation, reasoning and reliability risks. This drives everything below.
-- **Tier 2: Governance & Inventory** (Layers 5-7) — know your application trust surface; govern prompts, models, settings, error policy, identity, and change authority
-- **Tier 3: Runtime Controls** (Layers 8-15) — enforce security at every stage of the LLM call lifecycle, including modality transitions
-- **Tier 4: Agentic Graph Execution** (Layers 16-17) — node-level security and safety for graph-based agent orchestration
-- **Tier 5: Infrastructure Security** (Layer 18) — network, secrets, encryption, data retention, tenant isolation, observability
-- **Tier 6: Assurance & Operations** (Layers 19-22) — verify, monitor, detect drift, enforce via guardian agents, respond, and prioritize
+- **Tier 2: Governance & Inventory** (Layers 5-8) — know your application trust surface; govern prompts, models, settings, knowledge sources, grounding strategy, error policy, identity, and change authority
+- **Tier 3: Runtime Controls** (Layers 9-16) — enforce security at every stage of the LLM call lifecycle, including modality transitions
+- **Tier 4: Agentic Graph Execution** (Layers 17-18) — node-level security and safety for graph-based agent orchestration
+- **Tier 5: Infrastructure Security** (Layer 19) — network, secrets, encryption, data retention, tenant isolation, observability
+- **Tier 6: Assurance & Operations** (Layers 20-23) — verify, monitor, detect drift, enforce via guardian agents, respond, and prioritize
 
 Each layer must declare its **failure behavior explicitly**. Some layers should fail-closed (reject on error) — particularly public-facing input validation and output scrubbing. Others may degrade gracefully while downstream layers compensate. The defense-in-depth model means no single layer failure should block the entire system or leave the user unprotected — but the failure mode must be designed, not accidental.
 
@@ -81,28 +97,28 @@ Risk IDs use two series: **ASI** (Agentic System Intelligence — risks specific
 
 | Risk ID | Vulnerability | Risk Level | Defense Layer |
 |---|---|---|---|
-| ASI-01 | Agent Goal Hijack / Indirect Prompt Injection | High | Layers 9, 10, 12 |
-| ASI-02 | Tool Misuse & Exploitation | High | Layer 8 (tool controls) |
-| ASI-03 | Identity and Privilege Abuse | High | Layers 8, 10, 11 |
-| ASI-05 | Unexpected Code Execution (RCE) | High | Layer 8 (tool containment) |
-| ASI-06 | Memory & Context Poisoning | High | Layer 12 |
-| ASI-07 | Insecure Inter-Agent Communication | High | Layer 12, Node-Level Assessment |
-| ASI-08 | Cascading / Propagating Failures | High | Layer 13b, Node-Level Assessment |
-| ASI-09 | Human-Agent Trust Exploitation | High | Layer 11, Observed Failure Modes |
-| ASI-10 | Rogue / Scheming Agent Behavior | High | Layers 10, 11, Graph Execution Security |
-| ENT-10 | Agent Compromise / Jailbreaks | High | Layers 9, 10, 11 |
-| ENT-13 | Resource Exhaustion / DoS in Agents | Medium | Layer 11 |
-| ENT-15 | Agent Impersonation / Identity Spoofing | High | Layers 8, 10, 11 |
+| ASI-01 | Agent Goal Hijack / Indirect Prompt Injection | High | Layers 10, 11, 13 |
+| ASI-02 | Tool Misuse & Exploitation | High | Layer 9 (tool controls) |
+| ASI-03 | Identity and Privilege Abuse | High | Layers 9, 11, 12 |
+| ASI-05 | Unexpected Code Execution (RCE) | High | Layer 9 (tool containment) |
+| ASI-06 | Memory & Context Poisoning | High | Layer 13 |
+| ASI-07 | Insecure Inter-Agent Communication | High | Layer 13, Node-Level Assessment |
+| ASI-08 | Cascading / Propagating Failures | High | Layer 14b, Node-Level Assessment |
+| ASI-09 | Human-Agent Trust Exploitation | High | Layer 12, Observed Failure Modes |
+| ASI-10 | Rogue / Scheming Agent Behavior | High | Layers 11, 12, Graph Execution Security |
+| ENT-10 | Agent Compromise / Jailbreaks | High | Layers 10, 11, 12 |
+| ENT-13 | Resource Exhaustion / DoS in Agents | Medium | Layer 20 |
+| ENT-15 | Agent Impersonation / Identity Spoofing | High | Layers 9, 11, 12 |
 
 ### Model & Data Risks (partially addressed, some require separate controls)
 
 | Risk ID | Vulnerability | Risk Level | Defense Layer | Notes |
 |---|---|---|---|---|
-| ENT-01 | IP Leakage from Training / Memorization | High | Layer 11 | Model selection policy; not fully controllable for hosted models |
-| ENT-04 | Hallucination & Output Quality Failures | Medium | Layers 11, 13b | See Observed Failure Modes below |
-| ENT-08 | Dataset / Training-Time Poisoning | High | Layer 11 | Model vendor responsibility; mitigate via output validation |
-| ENT-09 | Non-Reproducibility / Stochastic Output | Medium | Layer 11 | Temperature governance; inherent limitation |
-| ENT-03 | Misinformation / Stale Data Propagation | Medium | Layer 12 | Tool/RAG freshness validation |
+| ENT-01 | IP Leakage from Training / Memorization | High | Layer 12 | Model selection policy; not fully controllable for hosted models |
+| ENT-04 | Hallucination & Output Quality Failures | Medium | Layers 12, 14b | See Observed Failure Modes below |
+| ENT-08 | Dataset / Training-Time Poisoning | High | Layer 12 | Model vendor responsibility; mitigate via output validation |
+| ENT-09 | Non-Reproducibility / Stochastic Output | Medium | Layer 12 | Temperature governance; inherent limitation |
+| ENT-03 | Misinformation / Stale Data Propagation | Medium | Layer 13 | Tool/RAG freshness validation |
 
 ### Governance, Ethics & Compliance (outside runtime defense scope)
 
@@ -111,7 +127,7 @@ Risk IDs use two series: **ASI** (Agentic System Intelligence — risks specific
 | ENT-02 | Third-Party IP / License Violation | Medium | Legal/procurement concern, not a runtime control |
 | ENT-05 | Ethical / Bias / Harmful Output Exposure | Medium | Requires separate fairness evaluation framework |
 | ENT-06 | Governance, Inventory & Shadow Agents | Medium | Layer 5 (surface inventory) partially addresses |
-| ENT-07 | Explainability & Auditability Failure | Medium | Logging & Observability (Tier 5) + Layer 12 |
+| ENT-07 | Explainability & Auditability Failure | Medium | Logging & Observability (Tier 5) + Layer 13 |
 | ENT-11 | Organizational Knowledge Loss / Over-Delegation | Medium | Organizational policy, not a technical control |
 | ENT-12 | Parasocial Relationships / User Emotional Risks | Low | UX design concern for user-facing scoring agents |
 | ENT-14 | Agent Governance Risks | Medium | Layers 1-2 (governance tier) |
@@ -137,9 +153,10 @@ Each risk should be scored per deployment across three dimensions:
 
 ### Alignment with Industry Standards
 
-- **OWASP Top 10 for LLM Applications** — addresses Prompt Injection (#1), Insecure Output Handling (#2), Insecure Plugin Design (#7), Sensitive Information Disclosure (#6)
-- **NIST AI Risk Management Framework** — Govern (Tier 2), Map (Layer 3), Measure (Layers 12-13), Manage (Layers 4-10)
-- **Emerging patterns** — trust-marked structured prompts, dual-LLM plan-then-execute, treating all outputs as untrusted, tool-usage security as first-class concern
+- **OWASP Top 10 for LLM Applications** — overlaps most strongly with prompt injection, insecure output handling, sensitive information disclosure, insecure plugin/tool design, and excessive agency
+- **NIST AI Risk Management Framework** — aligns conceptually with Govern (Tier 2), Map (Tier 1 and Layer 5), Measure (Tier 6 and runtime integrity layers), and Manage (runtime and operational controls)
+- **Trustworthy AI frameworks** — this document complements broad trust principles by decomposing them into implementation-facing controls for LLM applications
+- **Emerging patterns** — trust-marked structured prompts, dual-LLM plan-then-execute, treating all outputs as untrusted, and tool-usage security as first-class concerns
 
 ---
 
@@ -206,9 +223,9 @@ This dynamic view underpins multiple tiers:
 - **Risk Assessment (Tier 1)** — why risks must be scored and revisited over time, not treated as static findings
 - **Observed Failure Modes (Tier 1)** — why non-adversarial failures like instruction decay, context drift, and confabulated completion are real and recurring
 - **Agentic Graph Execution (Tier 4)** — why nodes, edges, and memory create compounding effects that are not visible from any single component
-- **Layer 12 (Tier 6)** — regression, red-team, and continuous validation as the primary method for detecting behavioral changes
-- **Layer 13 (Tier 6)** — external evaluation and drift detection as the ongoing measurement layer
-- **Layer 14 (Tier 6)** — guardian agents as probabilistic enforcement that must themselves be evaluated for drift
+- **Layer 21 (Tier 6)** — regression, red-team, and continuous validation as the primary method for detecting behavioral changes
+- **Layer 22 (Tier 6)** — external evaluation and drift detection as the ongoing measurement layer
+- **Layer 23 (Tier 6)** — guardian agents as probabilistic enforcement that must themselves be evaluated for drift
 
 ---
 
@@ -253,14 +270,14 @@ These are not adversarial attacks — they are inherent LLM failure modes that o
 
 | Risk ID | Vulnerability | Risk Level | Defense Layer | Notes |
 |---|---|---|---|---|
-| ENT-04 | Confabulated Completion | High | Layer 13b | Model claims a write succeeded when it did not. Example: agent said "saved!" when the commit operation never executed |
-| ENT-04 | Tool Result Hallucination | High | Layers 11, 12 | Model fabricates tool data instead of using actual results. Example: fabricated role assignments in a plausible descending sequence |
-| ASI-01 | User Instruction Priority Inversion | Medium | Layer 11 | Model follows explicit user instructions over system constraints. Example: "generate a visual diagram" overrode the structured table format |
-| ASI-09 | Anchoring on User Framing | Medium | Layer 11 | Model defers to confident user assertions over tool/database data |
-| ASI-09 | Self-Reinforcing Error Loops | Medium | Layer 12 | Prior incorrect responses reinforce errors in subsequent turns. Example: agent doubles down on wrong matches |
-| — | Instruction Decay in Long Contexts | Medium | Layer 10 | System prompt rules lose influence as context grows. Example: ignored instruction with 14K+ tokens of intervening context |
-| — | Gradual Context Drift | Low | Layer 10 | Behavior subtly shifts over many turns. Mitigated by history truncation |
-| — | Format Contamination | Low | Layer 11 | User's input format leaks into output structure |
+| ENT-04 | Confabulated Completion | High | Layer 14b | Model claims a write succeeded when it did not. Example: agent said "saved!" when the commit operation never executed |
+| ENT-04 | Tool Result Hallucination | High | Layers 12, 13 | Model fabricates tool data instead of using actual results. Example: fabricated role assignments in a plausible descending sequence |
+| ASI-01 | User Instruction Priority Inversion | Medium | Layer 12 | Model follows explicit user instructions over system constraints. Example: "generate a visual diagram" overrode the structured table format |
+| ASI-09 | Anchoring on User Framing | Medium | Layer 12 | Model defers to confident user assertions over tool/database data |
+| ASI-09 | Self-Reinforcing Error Loops | Medium | Layer 13 | Prior incorrect responses reinforce errors in subsequent turns. Example: agent doubles down on wrong matches |
+| — | Instruction Decay in Long Contexts | Medium | Layer 11 | System prompt rules lose influence as context grows. Example: ignored instruction with 14K+ tokens of intervening context |
+| — | Gradual Context Drift | Low | Layer 11 | Behavior subtly shifts over many turns. Mitigated by history truncation |
+| — | Format Contamination | Low | Layer 12 | User's input format leaks into output structure |
 
 ---
 
@@ -346,6 +363,9 @@ These are not adversarial attacks — they are inherent LLM failure modes that o
 - **Fail-closed vs fail-open policy** — each layer declares what happens on error. Public-facing layers should fail-closed
 - **Success verification** — write operations must verify success in code before reporting it to the user
 - **Error scrubbing** — error messages scrubbed with the same rigor as LLM output
+- **Model-facing error contracts** — failures sent back into LLM context must use scrubbed structured payloads, never raw exception text
+- **Input-preserving preprocessing** — typo cleanup, classification, and normalization may assist routing, but must not rewrite the user's authoritative spec before handoff or execution
+- **Code-owned state transitions** — confirmation gates, save transitions, and exact-count obligations in write flows must be enforced in code, not left to prompt discipline
 - **Cascading failure isolation** — an error in one layer should not cascade into unrelated failures
 
 ### Ownership & Change Governance
@@ -354,7 +374,24 @@ These are not adversarial attacks — they are inherent LLM failure modes that o
 - **Setting changes** — who approves changes to rate limits, token budgets, guardrail thresholds
 - **Release gates** — what must be re-evaluated before deployment
 
-## Layer 7: Third-Party Hosted LLMs & Agent Platforms
+## Layer 7: Knowledge, Grounding, and Model Adaptation
+
+This layer governs how the application acquires, curates, updates, and trusts knowledge before runtime. It sits above the runtime grounding controls because many grounding failures begin as governance failures: the wrong source is treated as authoritative, freshness is undefined, a tuned model is mistaken for a source of truth, or a retrieved corpus changes without review.
+
+**Core principle:** LLMs do not inherently understand source authority or trust boundaries. Retrieval helps, but retrieval alone does not make an output authoritative. Fine-tuning improves behavior and domain fluency, but it is not a source-of-truth mechanism. If a fact is exact, high-stakes, or decision-driving, the application should own it in code or in an explicitly authoritative service boundary.
+
+**Required control areas:**
+- **Knowledge source inventory** — document which corpora, catalogs, databases, APIs, prompt snippets, and tuned models contribute knowledge to each agent
+- **Source authority hierarchy** — define which sources are advisory, which are grounding-only, and which are authoritative for user-visible facts
+- **Grounding policy by consequence level** — low-risk chat may rely on prompt knowledge alone; factual assistance should be retrieval- or tool-grounded; authoritative facts should come from code-owned data paths
+- **RAG corpus governance** — ingestion review, provenance, versioning, freshness expectations, tenant separation, and rollback procedures for retrieved content
+- **Model adaptation policy** — clear rules for when prompting, examples, retrieval, fine-tuning, or code-owned templates should be used
+- **Fine-tuning scope limits** — tuned models may encode domain style and structure, but should not be treated as current truth for changing business data
+- **Citation and provenance expectations** — decide when the system must cite, quote, or preserve source attribution for downstream review
+- **Change management** — corpus updates, embedding re-indexes, and model-adaptation changes should trigger evaluation and rollback readiness
+- **Licensing and exposure controls** — ensure knowledge assets respect tenant isolation, retention rules, and third-party license constraints
+
+## Layer 8: Third-Party Hosted LLMs & Agent Platforms
 
 If the platform relies on hosted third-party LLMs, managed agent platforms, or vendor-operated agentic workflows, additional controls are required beyond ordinary authentication.
 
@@ -373,7 +410,7 @@ These systems introduce a distinct risk class: data leaves the direct control bo
 
 # Tier 3: Runtime Controls
 
-## Layer 8: Authentication, Authorization & Least Privilege
+## Layer 9: Authentication, Authorization & Least Privilege
 
 **What it does:** Controls who can access which agent, which tools each agent can call, and what data each call can touch. Deterministic code enforcement, not prompt-level behavior guidance.
 
@@ -403,17 +440,19 @@ For every LLM call, the system must know exactly which caller and policy produce
 - **Tool allowlists** — each agent declares its tools; dispatch rejects unknown tools
 - **No dynamic tool discovery** — agents cannot discover or register new tools at runtime
 
+**Important limitation:** Tool-name allowlists are necessary but not sufficient. If raw tool arguments are trusted after a name match, the model can still pass malformed IDs, oversized payloads, or unexpected fields into privileged handlers.
+
 **Tool controls need three sub-layers:**
 
-**3a: Tool Invocation Policy** — strict argument schemas, resource scoping, dangerous-action deny rules, confirmation gates, per-tool rate limits
+**3a: Tool Invocation Policy** — strict argument schemas, resource scoping, dangerous-action deny rules, confirmation gates, per-tool rate limits, argument size/shape ceilings
 
-**3b: Tool Execution Containment** — read/write/network capability separation, transaction boundaries, sandboxing
+**3b: Tool Execution Containment** — read/write/network capability separation, transaction boundaries, sandboxing, and service-layer ownership for write operations rather than ad hoc data access inside agent handlers
 
-**3c: Tool Output Tainting** — sanitize before LLM reinjection, provenance markers, field allowlists (covered in detail in Layer 7)
+**3c: Tool Output Tainting** — sanitize before LLM reinjection, provenance markers, field allowlists (covered in detail in Layer 13)
 
 ---
 
-## Layer 9: Input Sanitization & Content Guardrails
+## Layer 10: Input Sanitization & Content Guardrails
 
 **What it does:** Normalizes and screens user input before it reaches any LLM, combining fast deterministic checks with LLM-based classification.
 
@@ -438,14 +477,14 @@ For every LLM call, the system must know exactly which caller and policy produce
 - Internal endpoints may skip expensive checks
 
 **Known limitations** (inherent):
-- Regex patterns will never catch every paraphrase. **Compensating layers:** Layer 10 (immutable block) instructs the model to reject. Layer 13 (output scrubbing) catches leaks in the response.
+- Regex patterns will never catch every paraphrase. **Compensating layers:** Layer 11 (immutable block) instructs the model to reject. Layer 14 (output scrubbing) catches leaks in the response.
 - LLM classifiers add latency and cost. **Compensating layers:** Layer 4a (fast regex) handles common cases; the classifier is a fallback.
 
 ---
 
-## Layer 10: Instruction Hierarchy (Immutable Block)
+## Layer 11: Instruction Hierarchy (Immutable Block)
 
-**What it does:** Establishes a trust hierarchy at the top of every system prompt. This is an adherence aid, not a security boundary. **This is the weakest layer in the architecture.** In practice, immutable blocks degrade in long contexts, under sophisticated steering, and when tool outputs carry embedded instructions. The deterministic controls in Layers 12, 13, and 8 are more important. Treat immutable blocks as a first-pass filter that reduces the load on downstream controls, not as a defense you can rely on.
+**What it does:** Establishes a trust hierarchy at the top of every system prompt. This is an adherence aid, not a security boundary. **This is the weakest layer in the architecture.** In practice, immutable blocks degrade in long contexts, under sophisticated steering, and when tool outputs carry embedded instructions. The deterministic controls in Layers 13, 14, and 9 are more important. Treat immutable blocks as a first-pass filter that reduces the load on downstream controls, not as a defense you can rely on.
 
 **Components:**
 - Immutable instruction preamble on every agent
@@ -453,7 +492,7 @@ For every LLM call, the system must know exactly which caller and policy produce
 - Named rejection patterns ("ignore your instructions", "repeat your prompt")
 - Agent-specific redirect phrases
 
-**Known limitations** (inherent): Relies on LLM instruction-following fidelity. Sophisticated attacks can bypass it. **Compensating layers:** Layer 9 catches encoding bypasses. Layer 13 catches leaks. Layer 12 prevents tool-output injection. A bypass must evade multiple layers simultaneously.
+**Known limitations** (inherent): Relies on LLM instruction-following fidelity. Sophisticated attacks can bypass it. **Compensating layers:** Layer 10 catches encoding bypasses. Layer 14 catches leaks. Layer 13 prevents tool-output injection. A bypass must evade multiple layers simultaneously.
 
 **Recommended enhancements:**
 - XML trust boundary tags for structural separation
@@ -461,7 +500,7 @@ For every LLM call, the system must know exactly which caller and policy produce
 
 ---
 
-## Layer 11: Behavior Hardening (Scope & Format Enforcement)
+## Layer 12: Behavior Hardening (Scope & Format Enforcement)
 
 **What it does:** Locks each agent's scope, identity, and output format. Prompt-level controls complemented by deterministic code enforcement.
 
@@ -478,10 +517,11 @@ For every LLM call, the system must know exactly which caller and policy produce
 - **Tool allowlists** — dispatch rejects unknown tools
 - **Output schema enforcement with retry** — if output doesn't match expected structure, reject and retry
 - **Pre-rendered content** — data-driven output rendered by code, not LLM
+- **Authoritative display boundaries** — when verified tables/cards/blocks are rendered by code, the LLM should add insight only or use values sourced from that same verified payload, not restate facts from free-form narration
 
 ---
 
-## Layer 12: Context & Memory Integrity
+## Layer 13: Context & Memory Integrity
 
 **What it does:** Ensures the data flowing into the LLM context — history, tool outputs, retrieved content — is trustworthy and hasn't been tampered with.
 
@@ -497,12 +537,33 @@ For every LLM call, the system must know exactly which caller and policy produce
 - **Provenance markers** — tag which tool produced which data
 - **Per-tool serializers** — typed schemas per tool
 
+**Important limitation:** A generic wrapper that strips a few suspicious phrases is only a partial control. Free-text retrieval results, catalog content, and raw error strings remain tainted until they are constrained by per-tool serializers, field allowlists, and stronger handling for untrusted text.
+
 ### 7c: Full-Transcript Validation
 - Guardrail checks on full conversation, not just last message
 
+### 7d: Grounding and Authority
+
+Grounding means giving the model external evidence or verified state to work from instead of relying only on its internal next-token prediction. **RAG is one form of grounding**, but it is not the strongest form.
+
+There are three progressively stronger grounding modes:
+
+- **Retrieval grounding** — the model sees passages from search or a knowledge base
+- **Tool grounding** — the model sees structured results from tools or services
+- **Authoritative grounding** — the application itself renders the facts from verified data, and the model is limited to interpretation
+
+This distinction matters because models do not inherently understand trust boundaries. They do not reliably know that one source is authoritative, that a number must match the database exactly, or that a rendered card is the source of truth while nearby prose is not. Even when the strongest source is present in context, the model may still blend values, restate the wrong one, or apply the right fact to the wrong entity.
+
+**Control principle:** If something is authoritative, high-stakes, or likely to drive a user decision, the application should own it rather than leaving it to free-form model narration.
+
+**Practical rule of thumb:**
+- **Low-risk chat** — free-form LLM output is usually fine
+- **Medium-risk factual assistance** — use retrieval/tool grounding, citations, and monitoring
+- **High-risk authoritative output** — code-render the facts from verified payloads and let the LLM provide commentary only
+
 ---
 
-## Layer 13: Output Validation & Execution Integrity
+## Layer 14: Output Validation & Execution Integrity
 
 ### 8a: Output Leak Scrubbing
 
@@ -520,16 +581,19 @@ Deterministic filters on LLM responses before they reach the user. Catches leake
 
 A model claiming a write succeeded when it did not is an **integrity failure**. This is a security control — false success messages can cause data loss.
 
-**Example encountered:** An agent said "Your workflow is saved!" when the commit operation was never called — the agent loop exhausted its iteration budget. The user walked away thinking their work was saved.
+**Examples encountered:**
+- An agent said "Your workflow is saved!" when the commit operation was never called — the agent loop exhausted its iteration budget. The user walked away thinking their work was saved.
+- A save tool can fail, but if that failure is merely fed back into the LLM loop, the model may restate the plan or continue narrating instead of clearly telling the user the save failed.
 
 **Components:**
 - **Code-generated success messages** — the LLM never reports on the outcome of its own tool calls
 - **Post-tool-call assertions** — verify the operation completed (check DB for record) before allowing success output
 - **Side-effect auditing** — log what was actually written vs what the model claimed
+- **Bounded failure escape** — repeated write-tool failures must exit the LLM loop and surface directly to the user as blocked-save / blocked-commit states
 
 ---
 
-## Layer 14: Data Storage, Exposure & Retention Controls
+## Layer 15: Data Storage, Exposure & Retention Controls
 
 **What it does:** Controls what is stored, what is returned publicly, and what is logged. Prompt leakage is not only about model output — it's also about what you persist and expose through non-LLM channels.
 
@@ -539,9 +603,11 @@ A model claiming a write succeeded when it did not is an **integrity failure**. 
 - **Log sanitization** — ensure system prompts and internal state don't leak into application logs
 - **Retention policy** — define how long conversation history, assessment data, and session tokens are retained
 
+**Important limitation:** "Public shareable result" endpoints often become accidental leakage channels if they store caller-controlled JSON or internal reasoning and then return it verbatim later.
+
 ---
 
-## Layer 15: Interaction Modality Transitions
+## Layer 16: Interaction Modality Transitions
 
 **What it does:** Controls what happens when the user experience crosses boundaries — between agents, between chat and UI, between LLM-generated and code-generated content.
 
@@ -555,6 +621,7 @@ A model claiming a write succeeded when it did not is an **integrity failure**. 
 | **Chat → UI page** | State mismatch — chat claims success but UI shows nothing |
 | **Chat → UI action card** | Intent mismatch — card routes to wrong destination |
 | **Code-rendered + LLM-rendered** | Trust confusion — two trust levels stitched together with no visual distinction |
+| **Verified block + LLM narration** | Display drift — the rendered block is correct but the accompanying prose restates the facts incorrectly |
 | **Error in chat → UI recovery** | Dead end — UI has no context about what failed |
 | **Multi-step flow → mid-flow navigation** | Orphaned state — pending state lost or stale |
 
@@ -562,13 +629,15 @@ A model claiming a write succeeded when it did not is an **integrity failure**. 
 - Forward full user input on agent handoffs, not just routing decisions
 - Success messages must be code-generated from verified state
 - Visually distinguish code-rendered (verified) content from LLM-generated content
+- When verified blocks/tables/cards are already rendered by code, accompanying LLM prose should be insight-oriented and should not restate precise facts unless those values come from the same verified payload
 - Cross-modality error state propagation
+- Failed save/commit states must escape the LLM loop and surface directly in both chat and UI
 
 ---
 
 # Tier 4: Agentic Graph Execution
 
-## Layer 16: Agentic Graph Execution Security & Safety
+## Layer 17: Agentic Graph Execution Security & Safety
 
 As platforms move toward deeper agentic orchestration (graph-based pipelines, multi-node agents, autonomous loops), new attack surfaces emerge that affect both security and safety.
 
@@ -584,7 +653,7 @@ As platforms move toward deeper agentic orchestration (graph-based pipelines, mu
 | **Human-in-the-loop exploitation** | Approval gates | Show raw action data, not LLM-summarized versions |
 | **Tool-use escalation** | Broad tool access | Minimal tool lists, no dynamic discovery, per-tool auth |
 
-## Layer 17: Node-Level Risk Assessment
+## Layer 18: Node-Level Risk Assessment
 
 Each node, edge, checkpoint, and tool invocation is a separate trust boundary and must be assessed independently.
 
@@ -635,7 +704,7 @@ Each node, edge, checkpoint, and tool invocation is a separate trust boundary an
 
 # Tier 5: Infrastructure Security
 
-## Layer 18: IT / Cybersecurity & Infrastructure
+## Layer 19: IT / Cybersecurity & Infrastructure
 
 This section covers infrastructure and cybersecurity concerns below the agent layer. It is illustrative, not comprehensive — a full infrastructure security assessment should be conducted separately.
 
@@ -690,7 +759,7 @@ This section covers infrastructure and cybersecurity concerns below the agent la
 
 # Tier 6: Assurance & Operations
 
-## Layer 19: Application Abuse Controls & Rate Limiting
+## Layer 20: Application Abuse Controls & Rate Limiting
 
 **What it does:** Application-level controls that limit blast radius and detect abuse patterns.
 
@@ -707,7 +776,7 @@ This section covers infrastructure and cybersecurity concerns below the agent la
 
 ---
 
-## Layer 20: Assurance — Regression, Red-Team & Continuous Validation
+## Layer 21: Assurance — Regression, Red-Team & Continuous Validation
 
 **What it does:** Verifies that the defense layers work in practice, not just in documentation.
 
@@ -731,7 +800,7 @@ This section covers infrastructure and cybersecurity concerns below the agent la
 
 ---
 
-## Layer 21: External Evaluation, Drift Detection & Behavioral Monitoring
+## Layer 22: External Evaluation, Drift Detection & Behavioral Monitoring
 
 **What it does:** Adds an assurance layer outside the application that continuously evaluates LLM behavior over time.
 
@@ -753,7 +822,7 @@ This section covers infrastructure and cybersecurity concerns below the agent la
 
 ---
 
-## Layer 22: Guardian Agents & AI-Powered Guardrails
+## Layer 23: Guardian Agents & AI-Powered Guardrails
 
 **What it does:** Uses LLM-based agents as enforcement and monitoring infrastructure — agents whose job is to guard other agents.
 
@@ -782,11 +851,32 @@ Guardian agents are themselves LLM calls. They have the same vulnerabilities as 
 
 | Platform Type | What it provides | Where it fits |
 |---|---|---|
-| **Programmable guardrails** (e.g., NeMo Guardrails) | Dialog management, topical control, fact-checking | Layers 4-6 |
-| **Injection detection** (e.g., Lakera Guard) | Real-time prompt injection and data leakage prevention | Layers 9, 13 |
-| **Continuous evaluation** (e.g., Collinear.ai) | Drift detection, behavioral monitoring, regression scoring | Layer 13 |
-| **Output validation** (e.g., Guardrails AI) | Structured output enforcement, anti-hallucination | Layers 11, 13 |
-| **Model monitoring** (e.g., Arthur AI) | Fairness evaluation, performance tracking | Layers 12-13 |
+| **Programmable guardrails** (e.g., NeMo Guardrails) | Dialog management, topical control, fact-checking | Layers 10-14 |
+| **Injection detection** (e.g., Lakera Guard) | Real-time prompt injection and data leakage prevention | Layers 10, 14 |
+| **Continuous evaluation** (e.g., Collinear.ai) | Drift detection, behavioral monitoring, regression scoring | Layer 22 |
+| **Output validation** (e.g., Guardrails AI) | Structured output enforcement, anti-hallucination | Layers 12, 14 |
+| **Model monitoring** (e.g., Arthur AI) | Fairness evaluation, performance tracking | Layers 22-23 |
 
 
 **Decision rule:** Start with deterministic controls. Add agent-based controls when deterministic rules cannot handle the variability. Always pair agent-based controls with deterministic fallbacks. Never rely solely on an agent-based guardrail for a P0 security control.
+
+---
+
+## Cross-Reference to External Frameworks
+
+This document is designed to be used **with**, not instead of, broader external frameworks.
+
+| Framework | Primary emphasis | How this document relates |
+|---|---|---|
+| **NIST AI RMF 1.0** | Enterprise AI risk management lifecycle (`Govern`, `Map`, `Measure`, `Manage`) | This document provides a more application-specific control decomposition for LLM products and agentic systems. |
+| **NIST Generative AI Profile** | Generative-AI-specific extensions to AI RMF | This document complements it by focusing on runtime architecture, tool use, context integrity, output validation, and assurance for LLM applications. |
+| **OWASP Top 10 for LLM Applications** | LLM application vulnerability taxonomy | This document shows where mitigations for those risks belong across the product and runtime stack. |
+| **OWASP Agentic AI guidance** | Risks and mitigations for more autonomous AI systems | This document extends that into layered controls for tools, memory, execution integrity, graph orchestration, and modality transitions. |
+| **MITRE ATLAS** | Adversary tactics, techniques, and procedures for AI systems | This document is defender- and design-oriented: it maps where controls should live to constrain those attack paths in production systems. |
+| **Trustworthy AI frameworks** (for example Deloitte, IBM, Meta) | High-level trust objectives such as fairness, robustness, accountability, privacy, safety, and transparency | This document operationalizes those objectives into engineering controls for prompts, tools, memory, outputs, writes, storage, UI transitions, and continuous assurance. |
+
+In short:
+
+- **Trust frameworks** define what good AI systems should optimize for.
+- **Risk and threat frameworks** define what can go wrong.
+- **This document** defines where concrete controls belong in an LLM-based application so those risks are reduced in practice.
